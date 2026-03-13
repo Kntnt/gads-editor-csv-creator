@@ -1,16 +1,19 @@
 ---
 name: gads-editor-csv-creator
 description: >
-  Create a CSV import file for Google Ads Editor from landing page analysis and RSA ad copy files.
-  Use this skill whenever the user wants to produce a CSV file that can be imported into Google Ads
-  Editor to set up new campaigns, ad groups, keywords, negative keywords, and responsive search ads.
-  Also trigger when the user has already run gads-landing-page-analyzer and gads-responsive-search-ads-creator
-  and now wants to turn the output into something Google Ads Editor can consume. Trigger phrases include:
-  "create CSV for Google Ads Editor", "GAds Editor CSV", "export to Google Ads Editor", "skapa CSV",
-  "importfil for Google Ads Editor", "Google Ads import", "skapa importfil", "editor CSV",
-  "generate import file", "CSV from RSA files", "make a Google Ads CSV", or any indication
-  that the user wants to go from RSA Markdown files to a Google Ads Editor import file.
-  Even a simple "now create the CSV" or "export this to Editor" after running the RSA creator should trigger this skill.
+  Generate a Google Ads Editor CSV import file from analysis and RSA Markdown files.
+  ALWAYS use this skill when the user mentions Google Ads Editor, CSV export, import file,
+  or anything about turning ad copy / RSA files / keyword clusters into a file that Google Ads
+  Editor can consume. This is the final step in the gads toolchain – after
+  gads-landing-page-analyzer and gads-responsive-search-ads-creator have produced their
+  Markdown output, this skill turns it into a ready-to-import CSV with campaigns, ad groups,
+  keywords, RSA ads, and negative keywords. Trigger on any of these patterns: "CSV",
+  "Google Ads Editor", "import file", "importfil", "Editor CSV", "export to Editor",
+  "skapa CSV", "create the CSV", "gör CSV", "make the import file", "GAds Editor",
+  "bulk import", "editor import", or simply "now create the file" / "exportera" /
+  "generate the file" after RSA ads have been created. Also trigger when the user says
+  "next step" or "now what" after running the RSA creator, since this IS the next step.
+  When in doubt, trigger – this skill handles all Google Ads Editor CSV generation.
 ---
 
 # Google Ads Editor CSV Creator
