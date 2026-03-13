@@ -187,14 +187,16 @@ The CSV contains these row types in this order:
 | Tracking template | Per user choice |
 | Final URL suffix | Per user choice |
 
-#### Location Targeting Row
+#### Location Targeting Rows
+
+The location targeting field in RSA files may contain multiple locations separated by commas (e.g. "Stockholm, Göteborg, Malmö" or a list of 77 municipalities). The script splits these and creates **one row per location** – this is what Google Ads Editor requires.
 
 | Column | Value |
 |--------|-------|
 | Campaign | Campaign name |
 | Location ID | Google Ads Location ID (e.g. `2752` for Sweden) |
 
-If Location ID cannot be determined, use the `Location` column with the place name instead.
+If a Location ID cannot be determined for a given location, use the `Location` column with the place name instead.
 
 #### Ad Group Row
 
@@ -203,6 +205,12 @@ If Location ID cannot be determined, use the `Location` column with the place na
 | Campaign | Campaign name |
 | Ad Group | Ad group name from RSA file |
 | Ad Group status | `Enabled` |
+| Default max. CPC | `0.01` |
+| Max. CPM | `0.01` |
+| Target CPV | `0.01` |
+| Target CPM | `0.01` |
+
+The nominal bid values (0.01) are included because Google Ads Editor requires ad group-level bids even when using a smart bid strategy like "Maximize conversions". These values have no practical effect – the smart bid strategy overrides them – but their absence causes import warnings in Google Ads Editor.
 
 #### Keyword Row (one per keyword)
 
@@ -266,11 +274,13 @@ The script:
 - Auto-detects which file is the analysis (looks for "Negativa sökord" / "Negative keywords" section) and which are RSA files (looks for "Kampanj:" / "Campaign:" on the first line).
 - Parses all key-value pairs from RSA files, including multi-ad files separated by `---`.
 - Extracts negative keywords from the analysis file.
+- Splits multi-location targeting strings (comma/semicolon/newline-separated) into one CSV row per location.
+- Adds nominal bid values (0.01) on ad group rows to satisfy Google Ads Editor's requirement for ad group-level bids when using smart bid strategies.
 - Validates character limits and prints warnings to stderr.
 - Generates the CSV with proper encoding (UTF-8 BOM), quoting, and column order.
-- Outputs the filename to stdout.
+- Outputs the filename and statistics as JSON to stdout.
 
-If `--language` is not specified, the script detects it from the keyword content. If `--location-id` is not specified, it reads the "Platsinriktning" / "Location targeting" field from RSA files and attempts to map it.
+If `--language` is not specified, the script detects it from the keyword content. If `--location-id` is not specified, it reads the "Platsinriktning" / "Location targeting" field from RSA files and attempts to map it (splitting multiple locations automatically).
 
 ## Design Principles
 

@@ -78,16 +78,26 @@ def detect_language(keywords: list[str]) -> str:
     return "en"
 
 
-def resolve_location(location_text: str) -> tuple[str | None, str | None]:
+def resolve_location(location_text: str) -> list[tuple[str | None, str | None]]:
     """
-    Try to map a location string to a Google Ads Location ID.
-    Returns (location_id, location_name). One will be None.
+    Parse a location string that may contain multiple locations separated by
+    commas, semicolons, or newlines. Returns a list of (location_id, location_name)
+    tuples – one per location. Google Ads Editor needs one row per location.
     """
-    normalized = location_text.strip().lower()
-    loc_id = LOCATION_MAP.get(normalized)
-    if loc_id:
-        return loc_id, None
-    return None, location_text.strip()
+    # Split on commas, semicolons, and newlines
+    parts = re.split(r"[,;\n]+", location_text)
+    results = []
+    for part in parts:
+        name = part.strip()
+        if not name:
+            continue
+        normalized = name.lower()
+        loc_id = LOCATION_MAP.get(normalized)
+        if loc_id:
+            results.append((loc_id, None))
+        else:
+            results.append((None, name))
+    return results
 
 
 def parse_position(pos_text: str) -> str:
@@ -381,6 +391,10 @@ ALL_COLUMNS = [
     "Location",
     "Ad Group",
     "Ad Group status",
+    "Default max. CPC",
+    "Max. CPM",
+    "Target CPV",
+    "Target CPM",
     "Keyword",
     "Criterion Type",
     "Ad Name",
@@ -426,17 +440,27 @@ def generate_csv(
     tracking_template: str = "",
     final_url_suffix: str = "",
     language: str = "sv",
-    location_id: str | None = None,
-    location_name: str | None = None,
+    locations: list[tuple[str | None, str | None]] | None = None,
 ) -> tuple[str, list[dict]]:
     """
     Generate all CSV rows. Returns (campaign_name, rows).
+
+    locations is a list of (location_id, location_name) tuples – one per
+    target location. Each tuple produces its own row in the CSV, which is
+    what Google Ads Editor expects.
     """
     if not ad_groups:
         raise ValueError("No ad groups found to generate CSV from.")
 
     campaign_name = ad_groups[0]["campaign"]
     rows = []
+
+    # Determine whether to include nominal bid values on ad group rows.
+    # When the bid strategy is "Maximize conversions" (with or without Target CPA),
+    # Google Ads Editor may warn about missing bids at ad group level. Setting
+    # these to 0.01 silences the warning without affecting actual bidding, because
+    # the smart bid strategy overrides these values.
+    use_nominal_bids = True  # Always true for now; all campaigns use Maximize conversions
 
     # 1. Campaign row
     campaign_row = make_row(
@@ -454,22 +478,31 @@ def generate_csv(
     )
     rows.append(campaign_row)
 
-    # 2. Location targeting rows
-    if location_id:
-        loc_row = make_row(Campaign=campaign_name, **{"Location ID": location_id})
-        rows.append(loc_row)
-    elif location_name:
-        loc_row = make_row(Campaign=campaign_name, Location=location_name)
-        rows.append(loc_row)
+    # 2. Location targeting rows – one row per location
+    if locations:
+        for loc_id, loc_name in locations:
+            if loc_id:
+                loc_row = make_row(Campaign=campaign_name, **{"Location ID": loc_id})
+            elif loc_name:
+                loc_row = make_row(Campaign=campaign_name, Location=loc_name)
+            else:
+                continue
+            rows.append(loc_row)
 
     # 3. Per ad group
     for ag in ad_groups:
-        # Ad group row
-        ag_row = make_row(
-            Campaign=campaign_name,
-            **{"Ad Group": ag["ad_group"]},
-            **{"Ad Group status": "Enabled"},
-        )
+        # Ad group row – include nominal bids to satisfy Google Ads Editor
+        ag_row_data = {
+            "Campaign": campaign_name,
+            "Ad Group": ag["ad_group"],
+            "Ad Group status": "Enabled",
+        }
+        if use_nominal_bids:
+            ag_row_data["Default max. CPC"] = "0.01"
+            ag_row_data["Max. CPM"] = "0.01"
+            ag_row_data["Target CPV"] = "0.01"
+            ag_row_data["Target CPM"] = "0.01"
+        ag_row = make_row(**ag_row_data)
         rows.append(ag_row)
 
         # Keyword rows
@@ -629,13 +662,16 @@ def main():
             all_keywords.extend([kw for kw, _ in kws])
         language = detect_language(all_keywords)
 
-    # Resolve location
-    location_id = args.location_id or None
-    location_name = args.location_name or None
-    if not location_id and not location_name and ad_groups:
+    # Resolve locations – CLI flags take precedence, otherwise parse from RSA files
+    locations: list[tuple[str | None, str | None]] = []
+    if args.location_id:
+        locations = [(args.location_id, None)]
+    elif args.location_name:
+        locations = [(None, args.location_name)]
+    elif ad_groups:
         loc_text = ad_groups[0].get("location_targeting", "")
         if loc_text:
-            location_id, location_name = resolve_location(loc_text)
+            locations = resolve_location(loc_text)
 
     # Validate
     warnings = validate_ads(ad_groups)
@@ -653,8 +689,7 @@ def main():
         tracking_template=args.tracking_template,
         final_url_suffix=args.final_url_suffix,
         language=language,
-        location_id=location_id,
-        location_name=location_name,
+        locations=locations,
     )
 
     # Build filename
@@ -670,8 +705,10 @@ def main():
     stats["filename"] = filename
     stats["output_path"] = str(output_path)
     stats["language"] = language
-    stats["location_id"] = location_id or ""
-    stats["location_name"] = location_name or ""
+    stats["locations"] = [
+        {"location_id": lid or "", "location_name": lname or ""}
+        for lid, lname in locations
+    ]
     stats["warnings"] = warnings
 
     import json

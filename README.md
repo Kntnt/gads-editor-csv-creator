@@ -43,6 +43,8 @@ During CSV generation, the skill asks for:
 The skill follows best practices as defaults:
 
 - **Maximize conversions with Target CPA** as the bid strategy
+- **Nominal ad group bids** (0.01) for Default max. CPC, Max. CPM, Target CPV, and Target CPM -- required by Google Ads Editor even when using smart bidding (the values have no effect on actual bidding)
+- **One location row per target location** -- multi-location strings (e.g. "Stockholm, Göteborg, Malmö") are automatically split into separate rows as Google Ads Editor requires
 - **Phrase match** as the default keyword match type
 - **Google Search only** -- no Search Partners
 - **Campaign paused, everything else enabled** at creation -- enable the campaign to go live
