@@ -90,10 +90,10 @@ Ask: *"What target CPA (cost per acquisition) do you want for the campaign(s)? E
 **4. Tracking settings**
 
 Present three options:
-- **Option 1 (default):** Leave empty – use the account's default tracking settings.
-- **Option 2:** Use a suggested UTM template that works with GA4, Matomo, and other tools:
+- **Option 1 (default):** Use a suggested UTM template that works with GA4, Matomo, and other tools:
   - Tracking template: `{lpurl}`
   - Final URL suffix: `utm_source=google&utm_medium=cpc&utm_campaign={campaignid}&utm_term={keyword}&utm_content={creative}&mtm_group={adgroupid}&mtm_cid={gclid}`
+- **Option 2:** Leave empty – use the account's default tracking settings.
 - **Option 3:** Enter your own tracking template and/or suffix.
 
 **5. Summary and confirmation**
@@ -101,7 +101,7 @@ Present three options:
 Before generating, show a summary of all settings that will be used:
 - Bid strategy: Maximize conversions (Target CPA: [user-specified amount])
 - Networks: Google Search only
-- Status: Paused (campaign, ad groups, keywords, ads)
+- Status: Campaign paused; ad groups, keywords, and ads enabled (activate by enabling the campaign)
 - Negative keywords: Campaign level, phrase match
 - Language targeting: [detected from analysis/keywords]
 - Location targeting: [from RSA files]
@@ -185,6 +185,7 @@ The CSV contains these row types in this order:
 | Bid strategy type | `Maximize conversions` |
 | Target CPA | User-specified target CPA amount |
 | Campaign status | `Paused` |
+| EU Political Ads | `No` |
 | Tracking template | Per user choice |
 | Final URL suffix | Per user choice |
 
@@ -203,7 +204,7 @@ If Location ID cannot be determined, use the `Location` column with the place na
 |--------|-------|
 | Campaign | Campaign name |
 | Ad Group | Ad group name from RSA file |
-| Ad Group status | `Paused` |
+| Ad Group status | `Enabled` |
 
 #### Keyword Row (one per keyword)
 
@@ -213,7 +214,7 @@ If Location ID cannot be determined, use the `Location` column with the place na
 | Ad Group | Ad group name |
 | Keyword | The keyword text (without surrounding quotes or brackets) |
 | Criterion Type | `Broad`, `Phrase`, or `Exact` |
-| Status | `Paused` |
+| Status | `Enabled` |
 
 #### Ad Row (RSA)
 
@@ -223,7 +224,7 @@ If Location ID cannot be determined, use the `Location` column with the place na
 | Ad Group | Ad group name |
 | Ad Name | `{AdGroup}_RSA_1` (or `_RSA_2`, `_RSA_3` for additional ads) |
 | Ad type | `Responsive search ad` |
-| Status | `Paused` |
+| Status | `Enabled` |
 | Final URL | Final URL from RSA file |
 | Path 1 | Display path level 1 |
 | Path 2 | Display path level 2 |
@@ -283,12 +284,8 @@ This skill is opinionated – it follows best practices as defaults and requires
 - **Broad match** for keywords without any surrounding characters.
 - **Maximize conversions with Target CPA** as the bid strategy. The user is asked for their desired target CPA during Phase 1.
 - **Google Search only** – no Search Partners, for maximum control.
-- **Everything paused** at creation – for review before activation.
+- **Campaign paused, everything else enabled** at creation – enable the campaign to go live.
 - **Negative keywords at campaign level** with phrase match.
-
-## Future Extension (v2)
-
-A future version will support **updating existing campaigns** using `#Original` columns. This requires the user to provide an exported CSV from Google Ads Editor (current state) alongside updated RSA files. The skill will compare and produce `#Original` columns for changed fields. This is not in scope for v1.
 
 ## Language
 

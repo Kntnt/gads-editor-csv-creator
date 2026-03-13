@@ -3,8 +3,8 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "Jag har kört landningssideanalys och RSA-skapare för SafeTeams kamerabevakningssida. Filerna ligger i mappen 'exempel'. Skapa nu en CSV-fil för Google Ads Editor. Budget 200 kr/dag, mål-CPA 150 kr, använd UTM-spårning (alternativ 2).",
-      "expected_output": "A CSV file with 1 campaign, 13 ad groups, ~114 keywords (all phrase match), 13 RSA ads, 35 negative keywords, location ID 2752 (Sweden), language sv, daily budget 200, Target CPA 150, bid strategy 'Maximize conversions', tracking template {lpurl} and UTM suffix.",
+      "prompt": "Jag har kört landningssideanalys och RSA-skapare för SafeTeams kamerabevakningssida. Filerna ligger i mappen 'exempel'. Skapa nu en CSV-fil för Google Ads Editor. Budget 200 kr/dag, mål-CPA 150 kr, använd UTM-spårning (alternativ 1).",
+      "expected_output": "A CSV file with 1 campaign, 13 ad groups, ~114 keywords (all phrase match), 13 RSA ads, 35 negative keywords, location ID 2752 (Sweden), language sv, daily budget 200, Target CPA 150, bid strategy 'Maximize conversions', tracking template {lpurl} and UTM suffix. EU Political Ads set to 'No'. Campaign paused but ad groups, keywords, and ads enabled.",
       "files": [],
       "assertions": [
         {
@@ -24,15 +24,35 @@
         },
         {
           "type": "file_contains",
-          "description": "CSV has Target CPA column header",
-          "check": "The CSV header row includes 'Target CPA' as a column"
+          "description": "CSV has EU Political Ads column with value No",
+          "check": "The CSV header contains 'EU Political Ads' and the campaign row has value 'No'"
+        },
+        {
+          "type": "file_contains",
+          "description": "Campaign status is Paused",
+          "check": "The campaign row has 'Paused' in the Campaign status column"
+        },
+        {
+          "type": "file_contains",
+          "description": "Ad group status is Enabled",
+          "check": "Ad group rows have 'Enabled' in the Ad Group status column"
+        },
+        {
+          "type": "file_contains",
+          "description": "Keyword status is Enabled",
+          "check": "Keyword rows have 'Enabled' in the Status column"
+        },
+        {
+          "type": "file_contains",
+          "description": "Ad status is Enabled",
+          "check": "RSA ad rows have 'Enabled' in the Status column"
         }
       ]
     },
     {
       "id": 2,
       "prompt": "Create a Google Ads Editor CSV from the RSA files in the 'exempel' folder. No budget, no tracking, just use the defaults. Target CPA should be 200.",
-      "expected_output": "CSV with empty budget, empty tracking fields, bid strategy 'Maximize conversions', Target CPA 200. English-language interaction but Swedish ad content.",
+      "expected_output": "CSV with empty budget, empty tracking fields, bid strategy 'Maximize conversions', Target CPA 200. EU Political Ads 'No'. Campaign paused, everything else enabled.",
       "files": [],
       "assertions": [
         {
@@ -46,16 +66,21 @@
           "check": "The generated CSV file contains '200' in the Target CPA column"
         },
         {
-          "type": "interaction",
-          "description": "User was asked about Target CPA during setup",
-          "check": "The skill asked the user for their desired Target CPA before generating the CSV"
+          "type": "file_contains",
+          "description": "CSV has EU Political Ads column with value No",
+          "check": "The CSV header contains 'EU Political Ads' and the campaign row has value 'No'"
+        },
+        {
+          "type": "file_contains",
+          "description": "Ad groups are Enabled while campaign is Paused",
+          "check": "Campaign status is 'Paused' but Ad Group status is 'Enabled'"
         }
       ]
     },
     {
       "id": 3,
       "prompt": "Skapa en importfil för Google Ads Editor baserat på analysfilerna i mappen 'exempel'. Jag vill ha budget 500 kr, mål-CPA 300 kr, och egen spårningsmall: tracking template '{lpurl}?source=gads' och suffix 'utm_source=google&utm_medium=cpc'.",
-      "expected_output": "CSV with custom tracking template and suffix. Budget 500. Target CPA 300. Bid strategy 'Maximize conversions'. Otherwise same structure.",
+      "expected_output": "CSV with custom tracking template and suffix. Budget 500. Target CPA 300. Bid strategy 'Maximize conversions'. EU Political Ads 'No'. Campaign paused, everything else enabled.",
       "files": [],
       "assertions": [
         {
@@ -72,6 +97,16 @@
           "type": "file_contains",
           "description": "CSV has correct budget of 500",
           "check": "The generated CSV file contains '500' in the Campaign daily budget column"
+        },
+        {
+          "type": "file_contains",
+          "description": "CSV has EU Political Ads set to No",
+          "check": "The CSV contains 'EU Political Ads' column with 'No' value"
+        },
+        {
+          "type": "file_contains",
+          "description": "All non-campaign entities are Enabled",
+          "check": "Ad groups, keywords, and ads have status 'Enabled' while campaign is 'Paused'"
         }
       ]
     }

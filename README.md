@@ -45,8 +45,13 @@ The skill follows best practices as defaults:
 - **Maximize conversions with Target CPA** as the bid strategy
 - **Phrase match** as the default keyword match type
 - **Google Search only** -- no Search Partners
-- **Everything paused** at creation -- for review before activation
+- **Campaign paused, everything else enabled** at creation -- enable the campaign to go live
+- **EU political ads declaration** set to "No" by default
 - **Negative keywords at campaign level** with phrase match
+
+## Future extension (v2)
+
+A future version will support **updating existing campaigns** using `#Original` columns. This requires the user to provide an exported CSV from Google Ads Editor (current state) alongside updated RSA files. The skill will compare and produce `#Original` columns for changed fields. This is not in scope for v1.
 
 ## License
 

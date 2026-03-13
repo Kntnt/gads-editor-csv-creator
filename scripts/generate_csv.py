@@ -374,6 +374,7 @@ ALL_COLUMNS = [
     "Bid strategy type",
     "Target CPA",
     "Campaign status",
+    "EU Political Ads",
     "Tracking template",
     "Final URL suffix",
     "Location ID",
@@ -447,6 +448,7 @@ def generate_csv(
         **{"Bid strategy type": "Maximize conversions"},
         **{"Target CPA": target_cpa},
         **{"Campaign status": "Paused"},
+        **{"EU Political Ads": "No"},
         **{"Tracking template": tracking_template},
         **{"Final URL suffix": final_url_suffix},
     )
@@ -466,7 +468,7 @@ def generate_csv(
         ag_row = make_row(
             Campaign=campaign_name,
             **{"Ad Group": ag["ad_group"]},
-            **{"Ad Group status": "Paused"},
+            **{"Ad Group status": "Enabled"},
         )
         rows.append(ag_row)
 
@@ -478,7 +480,7 @@ def generate_csv(
                 **{"Ad Group": ag["ad_group"]},
                 Keyword=kw,
                 **{"Criterion Type": match_type},
-                Status="Paused",
+                Status="Enabled",
             )
             rows.append(kw_row)
 
@@ -490,7 +492,7 @@ def generate_csv(
                 "Ad Group": ag["ad_group"],
                 "Ad Name": ad_name,
                 "Ad type": "Responsive search ad",
-                "Status": "Paused",
+                "Status": "Enabled",
                 "Final URL": ad["final_url"],
                 "Path 1": ad["path1"],
                 "Path 2": ad["path2"],
