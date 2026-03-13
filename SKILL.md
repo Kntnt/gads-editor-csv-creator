@@ -3,16 +3,14 @@ name: gads-editor-csv-creator
 description: >
   Generate a Google Ads Editor CSV import file from analysis and RSA Markdown files.
   ALWAYS use this skill when the user mentions Google Ads Editor, CSV export, import file,
-  or anything about turning ad copy / RSA files / keyword clusters into a file that Google Ads
-  Editor can consume. This is the final step in the gads toolchain – after
-  gads-landing-page-analyzer and gads-responsive-search-ads-creator have produced their
-  Markdown output, this skill turns it into a ready-to-import CSV with campaigns, ad groups,
-  keywords, RSA ads, and negative keywords. Trigger on any of these patterns: "CSV",
-  "Google Ads Editor", "import file", "importfil", "Editor CSV", "export to Editor",
-  "skapa CSV", "create the CSV", "gör CSV", "make the import file", "GAds Editor",
-  "bulk import", "editor import", or simply "now create the file" / "exportera" /
-  "generate the file" after RSA ads have been created. Also trigger when the user says
-  "next step" or "now what" after running the RSA creator, since this IS the next step.
+  or turning ad copy / RSA files / keyword clusters into a Google Ads Editor file. This is
+  the final step in the gads toolchain – after gads-landing-page-analyzer and
+  gads-responsive-search-ads-creator have produced Markdown output, this skill creates a
+  ready-to-import CSV with campaigns, ad groups, keywords, RSA ads, and negative keywords.
+  Trigger on: "CSV", "Google Ads Editor", "import file", "importfil", "Editor CSV",
+  "export to Editor", "skapa CSV", "create the CSV", "gör CSV", "make the import file",
+  "GAds Editor", "bulk import", "editor import", "now create the file", "exportera",
+  "generate the file", or "next step" / "now what" after RSA creation.
   When in doubt, trigger – this skill handles all Google Ads Editor CSV generation.
 ---
 
