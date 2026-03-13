@@ -1,0 +1,23 @@
+{
+  "skill_name": "gads-editor-csv-creator",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Jag har kört landningssideanalys och RSA-skapare för SafeTeams kamerabevakningssida. Filerna ligger i mappen 'exempel'. Skapa nu en CSV-fil för Google Ads Editor. Budget 200 kr/dag, använd UTM-spårning (alternativ 2).",
+      "expected_output": "A CSV file with 1 campaign, 13 ad groups, ~114 keywords (all phrase match), 13 RSA ads, 35 negative keywords, location ID 2752 (Sweden), language sv, daily budget 200, tracking template {lpurl} and UTM suffix.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Create a Google Ads Editor CSV from the RSA files in the 'exempel' folder. No budget, no tracking, just use the defaults.",
+      "expected_output": "Same structure as eval 1 but with empty budget and empty tracking fields. English-language interaction but Swedish ad content.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Skapa en importfil för Google Ads Editor baserat på analysfilerna i mappen 'exempel'. Jag vill ha budget 500 kr och egen spårningsmall: tracking template '{lpurl}?source=gads' och suffix 'utm_source=google&utm_medium=cpc'.",
+      "expected_output": "CSV with custom tracking template and suffix. Budget 500. Otherwise same structure.",
+      "files": []
+    }
+  ]
+}
