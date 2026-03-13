@@ -83,7 +83,11 @@ If the user hasn't pointed to a folder containing analysis and RSA files, ask wh
 
 Ask: *"What daily budget do you want for the campaign(s)? Enter an amount (e.g. 200). Leave blank if you prefer to set the budget manually after importing into Google Ads Editor."*
 
-**3. Tracking settings**
+**3. Target CPA**
+
+Ask: *"What target CPA (cost per acquisition) do you want for the campaign(s)? Enter an amount in the account's currency (e.g. 150). This will be used with the 'Maximize conversions' bid strategy."*
+
+**4. Tracking settings**
 
 Present three options:
 - **Option 1 (default):** Leave empty – use the account's default tracking settings.
@@ -92,10 +96,10 @@ Present three options:
   - Final URL suffix: `utm_source=google&utm_medium=cpc&utm_campaign={campaignid}&utm_term={keyword}&utm_content={creative}&mtm_group={adgroupid}&mtm_cid={gclid}`
 - **Option 3:** Enter your own tracking template and/or suffix.
 
-**4. Summary and confirmation**
+**5. Summary and confirmation**
 
 Before generating, show a summary of all settings that will be used:
-- Bid strategy: Maximize clicks
+- Bid strategy: Maximize conversions (Target CPA: [user-specified amount])
 - Networks: Google Search only
 - Status: Paused (campaign, ad groups, keywords, ads)
 - Negative keywords: Campaign level, phrase match
@@ -178,7 +182,8 @@ The CSV contains these row types in this order:
 | Campaign daily budget | User-specified budget (or empty) |
 | Language | Language code detected from analysis (e.g. `sv`) |
 | Networks | `Google Search` |
-| Bid strategy type | `Maximize clicks` |
+| Bid strategy type | `Maximize conversions` |
+| Target CPA | User-specified target CPA amount |
 | Campaign status | `Paused` |
 | Tracking template | Per user choice |
 | Final URL suffix | Per user choice |
@@ -250,6 +255,7 @@ python <skill-path>/scripts/generate_csv.py \
   --input-dir <folder-with-md-files> \
   --output-dir <where-to-save-csv> \
   [--budget <daily-budget>] \
+  [--target-cpa <amount>] \
   [--tracking-template <template>] \
   [--final-url-suffix <suffix>] \
   [--language <lang-code>] \
@@ -275,7 +281,7 @@ This skill is opinionated – it follows best practices as defaults and requires
 - **Phrase match is the default** for regular keywords (marked with `"..."` in the RSA files).
 - **Exact match** for keywords marked with `[...]`.
 - **Broad match** for keywords without any surrounding characters.
-- **Maximize clicks** as the starting bid strategy – with a recommendation to switch to Maximize conversions or Target CPA once the account has 30+ conversions per month.
+- **Maximize conversions with Target CPA** as the bid strategy. The user is asked for their desired target CPA during Phase 1.
 - **Google Search only** – no Search Partners, for maximum control.
 - **Everything paused** at creation – for review before activation.
 - **Negative keywords at campaign level** with phrase match.

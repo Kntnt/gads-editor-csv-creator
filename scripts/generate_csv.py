@@ -372,6 +372,7 @@ ALL_COLUMNS = [
     "Language",
     "Networks",
     "Bid strategy type",
+    "Target CPA",
     "Campaign status",
     "Tracking template",
     "Final URL suffix",
@@ -420,6 +421,7 @@ def generate_csv(
     ad_groups: list[dict],
     negative_keywords: list[str],
     budget: str = "",
+    target_cpa: str = "",
     tracking_template: str = "",
     final_url_suffix: str = "",
     language: str = "sv",
@@ -442,7 +444,8 @@ def generate_csv(
         **{"Campaign daily budget": budget},
         Language=language,
         Networks="Google Search",
-        **{"Bid strategy type": "Maximize clicks"},
+        **{"Bid strategy type": "Maximize conversions"},
+        **{"Target CPA": target_cpa},
         **{"Campaign status": "Paused"},
         **{"Tracking template": tracking_template},
         **{"Final URL suffix": final_url_suffix},
@@ -577,6 +580,7 @@ def main():
     parser.add_argument("--input-dir", required=True, help="Folder with analysis + RSA .md files")
     parser.add_argument("--output-dir", required=True, help="Folder to save the CSV")
     parser.add_argument("--budget", default="", help="Campaign daily budget")
+    parser.add_argument("--target-cpa", default="", help="Target CPA for Maximize conversions bid strategy")
     parser.add_argument("--tracking-template", default="", help="Tracking template")
     parser.add_argument("--final-url-suffix", default="", help="Final URL suffix")
     parser.add_argument("--language", default="", help="Language code (e.g. sv, en)")
@@ -643,6 +647,7 @@ def main():
         ad_groups=ad_groups,
         negative_keywords=negative_keywords,
         budget=args.budget,
+        target_cpa=args.target_cpa,
         tracking_template=args.tracking_template,
         final_url_suffix=args.final_url_suffix,
         language=language,

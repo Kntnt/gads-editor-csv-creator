@@ -3,21 +3,77 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "Jag har kört landningssideanalys och RSA-skapare för SafeTeams kamerabevakningssida. Filerna ligger i mappen 'exempel'. Skapa nu en CSV-fil för Google Ads Editor. Budget 200 kr/dag, använd UTM-spårning (alternativ 2).",
-      "expected_output": "A CSV file with 1 campaign, 13 ad groups, ~114 keywords (all phrase match), 13 RSA ads, 35 negative keywords, location ID 2752 (Sweden), language sv, daily budget 200, tracking template {lpurl} and UTM suffix.",
-      "files": []
+      "prompt": "Jag har kört landningssideanalys och RSA-skapare för SafeTeams kamerabevakningssida. Filerna ligger i mappen 'exempel'. Skapa nu en CSV-fil för Google Ads Editor. Budget 200 kr/dag, mål-CPA 150 kr, använd UTM-spårning (alternativ 2).",
+      "expected_output": "A CSV file with 1 campaign, 13 ad groups, ~114 keywords (all phrase match), 13 RSA ads, 35 negative keywords, location ID 2752 (Sweden), language sv, daily budget 200, Target CPA 150, bid strategy 'Maximize conversions', tracking template {lpurl} and UTM suffix.",
+      "files": [],
+      "assertions": [
+        {
+          "type": "file_contains",
+          "description": "CSV bid strategy is Maximize conversions",
+          "check": "The generated CSV file contains 'Maximize conversions' in the Bid strategy type column"
+        },
+        {
+          "type": "file_contains",
+          "description": "CSV contains Target CPA value of 150",
+          "check": "The generated CSV file contains '150' in the Target CPA column"
+        },
+        {
+          "type": "file_not_contains",
+          "description": "CSV does not contain Maximize clicks",
+          "check": "The generated CSV file does NOT contain 'Maximize clicks'"
+        },
+        {
+          "type": "file_contains",
+          "description": "CSV has Target CPA column header",
+          "check": "The CSV header row includes 'Target CPA' as a column"
+        }
+      ]
     },
     {
       "id": 2,
-      "prompt": "Create a Google Ads Editor CSV from the RSA files in the 'exempel' folder. No budget, no tracking, just use the defaults.",
-      "expected_output": "Same structure as eval 1 but with empty budget and empty tracking fields. English-language interaction but Swedish ad content.",
-      "files": []
+      "prompt": "Create a Google Ads Editor CSV from the RSA files in the 'exempel' folder. No budget, no tracking, just use the defaults. Target CPA should be 200.",
+      "expected_output": "CSV with empty budget, empty tracking fields, bid strategy 'Maximize conversions', Target CPA 200. English-language interaction but Swedish ad content.",
+      "files": [],
+      "assertions": [
+        {
+          "type": "file_contains",
+          "description": "CSV bid strategy is Maximize conversions",
+          "check": "The generated CSV file contains 'Maximize conversions' in the Bid strategy type column"
+        },
+        {
+          "type": "file_contains",
+          "description": "CSV contains Target CPA value of 200",
+          "check": "The generated CSV file contains '200' in the Target CPA column"
+        },
+        {
+          "type": "interaction",
+          "description": "User was asked about Target CPA during setup",
+          "check": "The skill asked the user for their desired Target CPA before generating the CSV"
+        }
+      ]
     },
     {
       "id": 3,
-      "prompt": "Skapa en importfil för Google Ads Editor baserat på analysfilerna i mappen 'exempel'. Jag vill ha budget 500 kr och egen spårningsmall: tracking template '{lpurl}?source=gads' och suffix 'utm_source=google&utm_medium=cpc'.",
-      "expected_output": "CSV with custom tracking template and suffix. Budget 500. Otherwise same structure.",
-      "files": []
+      "prompt": "Skapa en importfil för Google Ads Editor baserat på analysfilerna i mappen 'exempel'. Jag vill ha budget 500 kr, mål-CPA 300 kr, och egen spårningsmall: tracking template '{lpurl}?source=gads' och suffix 'utm_source=google&utm_medium=cpc'.",
+      "expected_output": "CSV with custom tracking template and suffix. Budget 500. Target CPA 300. Bid strategy 'Maximize conversions'. Otherwise same structure.",
+      "files": [],
+      "assertions": [
+        {
+          "type": "file_contains",
+          "description": "CSV bid strategy is Maximize conversions",
+          "check": "The generated CSV file contains 'Maximize conversions'"
+        },
+        {
+          "type": "file_contains",
+          "description": "CSV contains Target CPA value of 300",
+          "check": "The generated CSV file contains '300' in the Target CPA column"
+        },
+        {
+          "type": "file_contains",
+          "description": "CSV has correct budget of 500",
+          "check": "The generated CSV file contains '500' in the Campaign daily budget column"
+        }
+      ]
     }
   ]
 }
