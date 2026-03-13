@@ -34,6 +34,7 @@ from pathlib import Path
 # ---------------------------------------------------------------------------
 
 LOCATION_MAP = {
+    "national": "2752",
     "nationell": "2752",
     "sverige": "2752",
     "sweden": "2752",
