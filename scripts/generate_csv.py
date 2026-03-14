@@ -559,9 +559,24 @@ def generate_csv(
 
 
 def write_csv(rows: list[dict], output_path: Path) -> None:
-    """Write rows to a CSV file with UTF-8 BOM encoding."""
-    with open(output_path, "w", encoding="utf-8-sig", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=ALL_COLUMNS, quoting=csv.QUOTE_MINIMAL)
+    """Write rows as tab-separated values with UTF-16 LE BOM encoding.
+
+    Google Ads Editor expects TSV (tab-separated) with UTF-16 LE encoding,
+    which is also what it exports. Using comma-separated CSV causes parse
+    failures when ad text contains commas, because Google Ads Editor does
+    not respect CSV quoting rules.
+    """
+    with open(output_path, "w", encoding="utf-16-le", newline="") as f:
+        # Write UTF-16 LE BOM
+        f.write("\ufeff")
+        writer = csv.DictWriter(
+            f,
+            fieldnames=ALL_COLUMNS,
+            delimiter="\t",
+            quoting=csv.QUOTE_NONE,
+            escapechar=None,
+            quotechar=None,
+        )
         writer.writeheader()
         writer.writerows(rows)
 

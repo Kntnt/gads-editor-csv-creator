@@ -152,9 +152,10 @@ The script handles all parsing, validation, and CSV generation. See the Script R
 ### General Rules
 
 - Standard Google Ads Editor column headers (English) on the first row.
-- Comma-separated values.
-- UTF-8 encoding with BOM (`\xEF\xBB\xBF`) for compatibility with Excel and Google Ads Editor.
-- Fields containing commas, quotes, or newlines are quoted; internal quotes are doubled.
+- **Tab-separated values** (TSV) – Google Ads Editor expects tab-separated data. Using commas
+  causes parse failures when ad text contains commas, because Google Ads Editor does not respect
+  CSV quoting rules.
+- **UTF-16 LE encoding** with BOM – this matches the format Google Ads Editor itself exports.
 - Leave fields empty (not `[]`) for values that should not be changed.
 
 ### Row Types and Order (hierarchical)
@@ -277,7 +278,8 @@ The script:
 - Splits multi-location targeting strings (comma/semicolon/newline-separated) into one CSV row per location.
 - Adds nominal bid values (0.01) on ad group rows to satisfy Google Ads Editor's requirement for ad group-level bids when using smart bid strategies.
 - Validates character limits and prints warnings to stderr.
-- Generates the CSV with proper encoding (UTF-8 BOM), quoting, and column order.
+- Generates the output file as tab-separated values with UTF-16 LE BOM encoding
+  (matching Google Ads Editor's native export format).
 - Outputs the filename and statistics as JSON to stdout.
 
 If `--language` is not specified, the script detects it from the keyword content. If `--location-id` is not specified, it reads the "Platsinriktning" / "Location targeting" field from RSA files and attempts to map it (splitting multiple locations automatically).

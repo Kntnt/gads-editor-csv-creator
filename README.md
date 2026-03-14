@@ -1,16 +1,16 @@
 # gads-editor-csv-creator
 
-A Claude skill that generates a Google Ads Editor CSV import file from analysis and RSA Markdown files.
+A Claude skill that generates a Google Ads Editor import file (tab-separated, UTF-16 LE) from analysis and RSA Markdown files.
 
 ## What it does
 
-Given a folder of Markdown files produced by [gads-landing-page-analyzer](https://github.com/Kntnt/gads-landing-page-analyzer) and [gads-responsive-search-ads-creator](https://github.com/Kntnt/gads-responsive-search-ads-creator), this skill produces a single CSV file ready for import into Google Ads Editor -- complete with campaign settings, location targeting, ad groups, keywords, RSA ads, and negative keywords.
+Given a folder of Markdown files produced by [gads-landing-page-analyzer](https://github.com/Kntnt/gads-landing-page-analyzer) and [gads-responsive-search-ads-creator](https://github.com/Kntnt/gads-responsive-search-ads-creator), this skill produces a single tab-separated file (UTF-16 LE with BOM) ready for import into Google Ads Editor -- complete with campaign settings, location targeting, ad groups, keywords, RSA ads, and negative keywords.
 
 This is the third and final link in a toolchain:
 
 1. **gads-landing-page-analyzer** -- analyzes a landing page and produces keyword clusters
 2. **gads-responsive-search-ads-creator** -- generates RSA ad copy for each cluster
-3. **gads-editor-csv-creator** (this skill) -- turns it all into a Google Ads Editor CSV
+3. **gads-editor-csv-creator** (this skill) -- turns it all into a Google Ads Editor import file (TSV, UTF-16 LE)
 
 ## When it triggers
 
