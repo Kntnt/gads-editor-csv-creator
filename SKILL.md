@@ -30,7 +30,7 @@ This skill is the third and final link in a toolchain:
 
 The skill reads a folder containing:
 
-1. **One analysis file** (Markdown) – produced by gads-landing-page-analyzer. Contains negative keywords (in the "Negativa sökord" or "Negative keywords" section), landing page URL, geographic scope, and target segments.
+1. **One analysis file** (Markdown) – produced by gads-landing-page-analyzer. Contains negative keywords (in the "Negative keywords" section), landing page URL, geographic scope, and target segments.
 
 2. **One or more RSA files** (Markdown) – produced by gads-responsive-search-ads-creator. Each file describes an ad group with this structure:
 
@@ -45,8 +45,6 @@ Display path – level 2: <max 15 chars>
 Headline N (P): <text>
 Description N (P): <text>
 ```
-
-Legacy Swedish keys (`Kampanj:`, `Annonsgrupp:`, `Sökord:`, `Platsinriktning:`, `Slutlig webbadress:`, `Visningsadress – nivå 1/2:`, `Rubrik N:`, `Beskrivning N:`) are also supported for backward compatibility.
 
 A single RSA file may contain **multiple ads** for the same ad group (max 3), separated by `---`. Each ad after the first inherits the ad group's campaign, ad group name, keywords, and targeting from the header – only headlines, descriptions, display paths, and final URL vary.
 
@@ -119,7 +117,7 @@ python <skill-path>/scripts/generate_csv.py <input-folder> [options]
 
 The script handles all parsing, validation, and CSV generation. See the Script Reference section below for usage details.
 
-2. **Parse the analysis file** to extract negative keywords from the "Negativa sökord" or "Negative keywords" section.
+2. **Parse the analysis file** to extract negative keywords from the "Negative keywords" section.
 
 3. **Validate character limits:**
    - Headlines: max 30 characters
@@ -272,7 +270,7 @@ python <skill-path>/scripts/generate_csv.py \
 ```
 
 The script:
-- Auto-detects which file is the analysis (looks for "Negativa sökord" / "Negative keywords" section) and which are RSA files (looks for "Kampanj:" / "Campaign:" on the first line).
+- Auto-detects which file is the analysis (looks for "Negative keywords" section) and which are RSA files (looks for "Campaign:" on the first line).
 - Parses all key-value pairs from RSA files, including multi-ad files separated by `---`.
 - Extracts negative keywords from the analysis file.
 - Splits multi-location targeting strings (comma/semicolon/newline-separated) into one CSV row per location.
@@ -282,7 +280,7 @@ The script:
   (matching Google Ads Editor's native export format).
 - Outputs the filename and statistics as JSON to stdout.
 
-If `--language` is not specified, the script detects it from the keyword content. If `--location-id` is not specified, it reads the "Platsinriktning" / "Location targeting" field from RSA files and attempts to map it (splitting multiple locations automatically).
+If `--language` is not specified, the script detects it from the keyword content. If `--location-id` is not specified, it reads the "Location targeting" field from RSA files and attempts to map it (splitting multiple locations automatically).
 
 ## Design Principles
 

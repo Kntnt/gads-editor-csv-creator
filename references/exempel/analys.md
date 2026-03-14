@@ -230,7 +230,7 @@
 - kameraövervakning göteborg
 - kameraövervakning malmö
 
-## Negativa sökord
+## Negative keywords
 
 - hemma
 - hem

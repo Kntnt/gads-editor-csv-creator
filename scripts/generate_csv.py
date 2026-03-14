@@ -103,7 +103,7 @@ def resolve_location(location_text: str) -> list[tuple[str | None, str | None]]:
 def parse_position(pos_text: str) -> str:
     """Extract numeric position from parenthetical text, or empty string."""
     pos_text = pos_text.strip().lower()
-    if "valfri" in pos_text or "any" in pos_text:
+    if "any" in pos_text:
         return ""
     m = re.search(r"position\s*(\d+)", pos_text)
     if m:
@@ -150,18 +150,8 @@ def parse_keywords(kw_string: str) -> list[tuple[str, str]]:
 # RSA file parsing
 # ---------------------------------------------------------------------------
 
-# Key aliases: Swedish -> English
+# Key aliases: normalize English keys to internal names
 KEY_ALIASES = {
-    "kampanj": "campaign",
-    "annonsgrupp": "ad_group",
-    "sökord": "keywords",
-    "platsinriktning": "location_targeting",
-    "slutlig webbadress": "final_url",
-    "visningsadress – nivå 1": "path1",
-    "visningsadress – nivå 2": "path2",
-    "visningsadress - nivå 1": "path1",
-    "visningsadress - nivå 2": "path2",
-    # English equivalents
     "campaign": "campaign",
     "ad group": "ad_group",
     "keywords": "keywords",
@@ -175,21 +165,20 @@ KEY_ALIASES = {
 
 
 def normalize_key(key: str) -> str:
-    """Normalize a Swedish/English key to internal name."""
+    """Normalize an English key to internal name."""
     k = key.strip().lower()
     return KEY_ALIASES.get(k, k)
 
 
 def parse_headline_or_desc(key: str) -> tuple[str, int, str] | None:
     """
-    Parse a headline/description key like 'Rubrik 3 (position 2)'.
+    Parse a headline/description key like 'Headline 3 (position 2)'.
     Returns (type, number, position_csv_value) or None.
     """
-    # Swedish patterns
-    m = re.match(r"(?:rubrik|headline)\s+(\d+)\s*\(([^)]+)\)", key, re.IGNORECASE)
+    m = re.match(r"headline\s+(\d+)\s*\(([^)]+)\)", key, re.IGNORECASE)
     if m:
         return ("headline", int(m.group(1)), parse_position(m.group(2)))
-    m = re.match(r"(?:beskrivning|description)\s+(\d+)\s*\(([^)]+)\)", key, re.IGNORECASE)
+    m = re.match(r"description\s+(\d+)\s*\(([^)]+)\)", key, re.IGNORECASE)
     if m:
         return ("description", int(m.group(1)), parse_position(m.group(2)))
     return None
@@ -276,7 +265,7 @@ def parse_rsa_file(filepath: Path) -> dict:
 def parse_analysis_file(filepath: Path) -> list[str]:
     """
     Parse the analysis Markdown file to extract negative keywords.
-    Looks for a section titled 'Negativa sökord' or 'Negative keywords'.
+    Looks for a section titled 'Negative keywords'.
     Returns a list of keyword strings.
     """
     content = filepath.read_text(encoding="utf-8")
@@ -288,7 +277,7 @@ def parse_analysis_file(filepath: Path) -> list[str]:
     for line in lines:
         stripped = line.strip()
         # Detect section header
-        if re.match(r"^#{1,3}\s+(Negativa sökord|Negative keywords)", stripped, re.IGNORECASE):
+        if re.match(r"^#{1,3}\s+Negative keywords", stripped, re.IGNORECASE):
             in_negatives = True
             continue
         # Stop at next section header
@@ -322,14 +311,14 @@ def classify_files(input_dir: Path) -> tuple[Path | None, list[Path]]:
         content = f.read_text(encoding="utf-8", errors="replace")
         first_lines = content[:500].lower()
 
-        # Analysis files contain "negativa sökord" or "negative keywords"
-        if "negativa sökord" in content.lower() or "negative keywords" in content.lower():
+        # Analysis files contain "Negative keywords" section
+        if "negative keywords" in content.lower():
             # Also check it's not an RSA file that mentions it
-            if "kampanj:" not in first_lines and "campaign:" not in first_lines:
+            if "campaign:" not in first_lines:
                 analysis = f
                 continue
 
-        # RSA files start with "Kampanj:" or "Campaign:"
+        # RSA files start with "Campaign:"
         first_content_line = ""
         for line in content.splitlines():
             stripped = line.strip()
@@ -337,7 +326,7 @@ def classify_files(input_dir: Path) -> tuple[Path | None, list[Path]]:
                 first_content_line = stripped.lower()
                 break
 
-        if first_content_line.startswith("kampanj:") or first_content_line.startswith("campaign:"):
+        if first_content_line.startswith("campaign:"):
             rsa_files.append(f)
 
     return analysis, rsa_files

@@ -152,39 +152,6 @@
     },
     {
       "id": 4,
-      "prompt": "Jag har en RSA-fil med svenska nycklar (Kampanj, Annonsgrupp, Rubrik, Beskrivning, Sökord, etc.) i mappen 'test-swedish-keys'. Skapa en Google Ads Editor CSV. Mål-CPA 100 kr, ingen budget, standardspårning (alternativ 2).",
-      "expected_output": "The script should correctly parse Swedish keys (Kampanj, Annonsgrupp, Sökord, Platsinriktning, Slutlig webbadress, Visningsadress, Rubrik, Beskrivning) as backward compatibility. CSV should have correct campaign name, ad group name, keywords, headlines, descriptions, and all standard fields.",
-      "files": [],
-      "assertions": [
-        {
-          "type": "file_contains",
-          "description": "Swedish key 'Kampanj' parsed correctly",
-          "check": "The CSV contains the campaign name from the 'Kampanj:' line in the RSA file"
-        },
-        {
-          "type": "file_contains",
-          "description": "Swedish key 'Annonsgrupp' parsed correctly",
-          "check": "The CSV contains the ad group name from the 'Annonsgrupp:' line"
-        },
-        {
-          "type": "file_contains",
-          "description": "Swedish headlines (Rubrik) parsed correctly",
-          "check": "RSA ad rows contain headline text from 'Rubrik N:' lines"
-        },
-        {
-          "type": "file_contains",
-          "description": "Swedish descriptions (Beskrivning) parsed correctly",
-          "check": "RSA ad rows contain description text from 'Beskrivning N:' lines"
-        },
-        {
-          "type": "file_contains",
-          "description": "Swedish position 'valfri position' maps to empty/unpinned",
-          "check": "Headlines with 'valfri position' have empty position value in the CSV (unpinned)"
-        }
-      ]
-    },
-    {
-      "id": 5,
       "prompt": "I have an RSA file with multiple ads separated by --- in the same file (3 ads for one ad group), plus keywords with mixed match types: some in quotes (phrase), some in brackets (exact), and some without (broad). The files are in the 'test-multi-ad' folder. Create a Google Ads Editor CSV. Target CPA 100, no budget.",
       "expected_output": "CSV should contain 3 RSA ad rows for the same ad group (named _RSA_1, _RSA_2, _RSA_3), each with their own headlines/descriptions. Keywords should be correctly classified: quoted as Phrase, bracketed as Exact, bare as Broad. Each ad should inherit campaign/ad group/keywords from the header section.",
       "files": [],
@@ -217,7 +184,7 @@
       ]
     },
     {
-      "id": 6,
+      "id": 5,
       "prompt": "RSA-filerna i mappen 'test-multi-location' har platsinriktning 'Stockholm, Göteborg, Malmö'. Skapa CSV för Google Ads Editor. Mål-CPA 200 kr.",
       "expected_output": "CSV should have three separate location targeting rows – one for Stockholm (1012728), one for Göteborg (1011919), and one for Malmö (1012046). Each row should only have Campaign and Location ID columns filled in.",
       "files": [],
@@ -245,7 +212,7 @@
       ]
     },
     {
-      "id": 7,
+      "id": 6,
       "prompt": "Skapa en Google Ads Editor CSV från filerna i 'test-char-limits'. OBS: Några rubriker är för långa (över 30 tecken) och en beskrivning är över 90 tecken. Mål-CPA 100 kr.",
       "expected_output": "The CSV should be generated despite character limit violations, but the skill should warn about each violation: which ad group, which headline/description, the actual length, and the max allowed. The CSV should still contain the too-long text (let the user fix it).",
       "files": [],
