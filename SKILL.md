@@ -128,16 +128,7 @@ The script handles all parsing, validation, and CSV generation. See the Script R
 
 4. **Detect language** from the keywords and analysis. Map to Google Ads language code (e.g. Swedish → `sv`, English → `en`).
 
-5. **Map location targeting** to Google Ads Location IDs. Common mappings:
-   - "Nationell" / "Sverige" / "Sweden" → `2752`
-   - "Stockholm" → `1012728`
-   - "Göteborg" / "Gothenburg" → `1011919`
-   - "Malmö" → `1012046`
-   - "Finland" → `2246`
-   - "Norge" / "Norway" → `2578`
-   - "Danmark" / "Denmark" → `2208`
-
-   If the location cannot be mapped, use the `Location` column with the place name instead of `Location ID`.
+5. **Pass location targeting through as-is.** The script does not translate or look up location names – it copies them straight from the RSA files. If a value is numeric (e.g. `2752`, `1012728`), it goes into the `Location ID` column. If it is text (e.g. `Stockholm`), it goes into the `Location` column. The responsibility for providing correct Location IDs lies with the earlier steps in the toolchain (gads-landing-page-analyzer and gads-responsive-search-ads-creator).
 
 6. **Generate the CSV file** with all rows in hierarchical order.
 
@@ -280,7 +271,7 @@ The script:
   (matching Google Ads Editor's native export format).
 - Outputs the filename and statistics as JSON to stdout.
 
-If `--language` is not specified, the script detects it from the keyword content. If `--location-id` is not specified, it reads the "Location targeting" field from RSA files and attempts to map it (splitting multiple locations automatically).
+If `--language` is not specified, the script detects it from the keyword content. If `--location-id` is not specified, it reads the "Location targeting" field from RSA files and passes values through as-is: numeric values go into the `Location ID` column, text values go into the `Location` column. Multiple locations (comma/semicolon/newline-separated) are split into one row per location.
 
 ## Design Principles
 

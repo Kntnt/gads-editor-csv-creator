@@ -4,7 +4,7 @@
     {
       "id": 1,
       "prompt": "Jag har kört landningssideanalys och RSA-skapare för SafeTeams kamerabevakningssida. Filerna ligger i mappen 'exempel'. Skapa nu en CSV-fil för Google Ads Editor. Budget 200 kr/dag, mål-CPA 150 kr, använd UTM-spårning (alternativ 1).",
-      "expected_output": "A CSV file with 1 campaign, 13 ad groups, ~114 keywords (all phrase match), 13 RSA ads, 35 negative keywords, location ID 2752 (Sweden), language sv, daily budget 200, Target CPA 150, bid strategy 'Maximize conversions', tracking template {lpurl} and UTM suffix. EU Political Ads set to 'No'. Campaign paused but ad groups, keywords, and ads enabled.",
+      "expected_output": "A CSV file with 1 campaign, 13 ad groups, ~114 keywords (all phrase match), 13 RSA ads, 35 negative keywords, location 'National' in the Location column (text value, not a numeric ID), language sv, daily budget 200, Target CPA 150, bid strategy 'Maximize conversions', tracking template {lpurl} and UTM suffix. EU Political Ads set to 'No'. Campaign paused but ad groups, keywords, and ads enabled.",
       "files": [],
       "assertions": [
         {
@@ -54,8 +54,8 @@
         },
         {
           "type": "file_contains",
-          "description": "Location targeting row has correct ID for Sweden",
-          "check": "There is a location targeting row with Location ID '2752' (Sweden/National)"
+          "description": "Location targeting row has 'National' in Location column",
+          "check": "There is a location targeting row with 'National' in the Location column (text value passed through as-is, not translated to a numeric ID)"
         },
         {
           "type": "file_contains",
@@ -186,7 +186,7 @@
     {
       "id": 5,
       "prompt": "RSA-filerna i mappen 'test-multi-location' har platsinriktning 'Stockholm, Göteborg, Malmö'. Skapa CSV för Google Ads Editor. Mål-CPA 200 kr.",
-      "expected_output": "CSV should have three separate location targeting rows – one for Stockholm (1012728), one for Göteborg (1011919), and one for Malmö (1012046). Each row should only have Campaign and Location ID columns filled in.",
+      "expected_output": "CSV should have three separate location targeting rows – one per city name. Since the values are text (not numeric IDs), they go into the Location column (not Location ID). Each row should have Campaign and Location columns filled in.",
       "files": [],
       "assertions": [
         {
@@ -196,23 +196,36 @@
         },
         {
           "type": "file_contains",
-          "description": "Stockholm location ID correct",
-          "check": "One location row has Location ID '1012728' (Stockholm)"
+          "description": "Stockholm in Location column (text, not numeric)",
+          "check": "One location row has 'Stockholm' in the Location column (not Location ID, since it is a text value)"
         },
         {
           "type": "file_contains",
-          "description": "Göteborg location ID correct",
-          "check": "One location row has Location ID '1011919' (Göteborg)"
+          "description": "Göteborg in Location column (text, not numeric)",
+          "check": "One location row has 'Göteborg' in the Location column (not Location ID, since it is a text value)"
         },
         {
           "type": "file_contains",
-          "description": "Malmö location ID correct",
-          "check": "One location row has Location ID '1012046' (Malmö)"
+          "description": "Malmö in Location column (text, not numeric)",
+          "check": "One location row has 'Malmö' in the Location column (not Location ID, since it is a text value)"
         }
       ]
     },
     {
       "id": 6,
+      "prompt": "RSA-filerna i mappen 'test-numeric-locations' har platsinriktning '21000, 9067792, 1012335'. Skapa CSV för Google Ads Editor. Mål-CPA 100 kr.",
+      "expected_output": "CSV should have three separate location targeting rows with numeric IDs in the Location ID column (not in the Location column).",
+      "files": [],
+      "assertions": [
+        {
+          "type": "file_contains",
+          "description": "Numeric location IDs in Location ID column",
+          "check": "Location targeting rows have numeric values (21000, 9067792, 1012335) in the Location ID column, not in the Location column"
+        }
+      ]
+    },
+    {
+      "id": 7,
       "prompt": "Skapa en Google Ads Editor CSV från filerna i 'test-char-limits'. OBS: Några rubriker är för långa (över 30 tecken) och en beskrivning är över 90 tecken. Mål-CPA 100 kr.",
       "expected_output": "The CSV should be generated despite character limit violations, but the skill should warn about each violation: which ad group, which headline/description, the actual length, and the max allowed. The CSV should still contain the too-long text (let the user fix it).",
       "files": [],

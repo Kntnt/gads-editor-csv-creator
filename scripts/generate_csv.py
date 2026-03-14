@@ -29,27 +29,6 @@ from datetime import date
 from pathlib import Path
 
 
-# ---------------------------------------------------------------------------
-# Location ID mapping
-# ---------------------------------------------------------------------------
-
-LOCATION_MAP = {
-    "national": "2752",
-    "nationell": "2752",
-    "sverige": "2752",
-    "sweden": "2752",
-    "stockholm": "1012728",
-    "göteborg": "1011919",
-    "gothenburg": "1011919",
-    "malmö": "1012046",
-    "linköping": "1012008",
-    "trollhättan": "9062054",
-    "finland": "2246",
-    "norge": "2578",
-    "norway": "2578",
-    "danmark": "2208",
-    "denmark": "2208",
-}
 
 
 # ---------------------------------------------------------------------------
@@ -83,20 +62,22 @@ def resolve_location(location_text: str) -> list[tuple[str | None, str | None]]:
     Parse a location string that may contain multiple locations separated by
     commas, semicolons, or newlines. Returns a list of (location_id, location_name)
     tuples – one per location. Google Ads Editor needs one row per location.
+
+    The function does not attempt to translate or look up location names. It
+    simply checks whether each value is numeric (→ Location ID column) or
+    text (→ Location column). The responsibility for providing correct
+    Location IDs lies with the earlier steps in the toolchain.
     """
-    # Split on commas, semicolons, and newlines
     parts = re.split(r"[,;\n]+", location_text)
     results = []
     for part in parts:
-        name = part.strip()
-        if not name:
+        value = part.strip()
+        if not value:
             continue
-        normalized = name.lower()
-        loc_id = LOCATION_MAP.get(normalized)
-        if loc_id:
-            results.append((loc_id, None))
+        if value.isdigit():
+            results.append((value, None))   # -> Location ID
         else:
-            results.append((None, name))
+            results.append((None, value))   # -> Location (free text)
     return results
 
 
