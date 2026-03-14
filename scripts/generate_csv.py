@@ -121,6 +121,10 @@ def parse_keywords(kw_string: str) -> list[tuple[str, str]]:
     - keyword   -> Broad
     """
     results = []
+    # Normalize Unicode curly quotes to ASCII straight quotes before parsing.
+    # RSA files should use straight quotes, but copy-paste from Word or macOS
+    # may introduce curly quotes (\u201c \u201d) which must be treated identically.
+    kw_string = kw_string.replace("\u201c", '"').replace("\u201d", '"')
     # Split on commas that are outside quotes/brackets
     # Simple approach: use regex to find individual keyword tokens
     tokens = re.findall(r'"[^"]*"|\[[^\]]*\]|[^,]+', kw_string)
@@ -191,7 +195,7 @@ def parse_headline_or_desc(key: str) -> tuple[str, int, str] | None:
     return None
 
 
-def parse_rsa_file(filepath: Path) -> list[dict]:
+def parse_rsa_file(filepath: Path) -> dict:
     """
     Parse an RSA Markdown file. Returns a list of ad group dicts.
     Each file normally produces one dict, but files with multiple ads
@@ -558,6 +562,16 @@ def generate_csv(
     return campaign_name, rows
 
 
+def sanitize_field(value: str) -> str:
+    """Remove tab and newline characters from a field value.
+
+    Google Ads Editor TSV format cannot represent literal tabs or newlines
+    inside field values (tabs are delimiters, newlines are row separators).
+    This function replaces them with spaces to prevent CSV write errors.
+    """
+    return value.replace("\t", " ").replace("\n", " ").replace("\r", "")
+
+
 def write_csv(rows: list[dict], output_path: Path) -> None:
     """Write rows as tab-separated values with UTF-16 LE BOM encoding.
 
@@ -566,6 +580,10 @@ def write_csv(rows: list[dict], output_path: Path) -> None:
     failures when ad text contains commas, because Google Ads Editor does
     not respect CSV quoting rules.
     """
+    # Sanitize all field values to remove tabs and newlines
+    sanitized_rows = [
+        {k: sanitize_field(v) for k, v in row.items()} for row in rows
+    ]
     with open(output_path, "w", encoding="utf-16-le", newline="") as f:
         # Write UTF-16 LE BOM
         f.write("\ufeff")
@@ -578,7 +596,7 @@ def write_csv(rows: list[dict], output_path: Path) -> None:
             quotechar=None,
         )
         writer.writeheader()
-        writer.writerows(rows)
+        writer.writerows(sanitized_rows)
 
 
 # ---------------------------------------------------------------------------

@@ -46,6 +46,26 @@
           "type": "file_contains",
           "description": "Ad status is Enabled",
           "check": "RSA ad rows have 'Enabled' in the Status column"
+        },
+        {
+          "type": "file_contains",
+          "description": "Negative keywords use straight ASCII quotes",
+          "check": "Negative keyword rows in the CSV use straight ASCII double quotes (U+0022) around the keyword text, not Unicode curly quotes"
+        },
+        {
+          "type": "file_contains",
+          "description": "Location targeting row has correct ID for Sweden",
+          "check": "There is a location targeting row with Location ID '2752' (Sweden/National)"
+        },
+        {
+          "type": "file_contains",
+          "description": "Nominal bid values present on ad group rows",
+          "check": "Ad group rows contain '0.01' for Default max. CPC, Max. CPM, Target CPV, and Target CPM"
+        },
+        {
+          "type": "file_contains",
+          "description": "Ad names follow naming convention",
+          "check": "RSA ad rows have Ad Name in the format '{AdGroupName}_RSA_1'"
         }
       ]
     },
@@ -74,6 +94,16 @@
           "type": "file_contains",
           "description": "Ad groups are Enabled while campaign is Paused",
           "check": "Campaign status is 'Paused' but Ad Group status is 'Enabled'"
+        },
+        {
+          "type": "file_contains",
+          "description": "Budget field is empty when no budget specified",
+          "check": "The Campaign daily budget column is empty (not '0' or any other value)"
+        },
+        {
+          "type": "file_contains",
+          "description": "Tracking template is empty when defaults chosen",
+          "check": "The Tracking template column is empty when user chose no tracking"
         }
       ]
     },
@@ -107,6 +137,138 @@
           "type": "file_contains",
           "description": "All non-campaign entities are Enabled",
           "check": "Ad groups, keywords, and ads have status 'Enabled' while campaign is 'Paused'"
+        },
+        {
+          "type": "file_contains",
+          "description": "Custom tracking template is present",
+          "check": "The Tracking template column contains the user-specified custom tracking template"
+        },
+        {
+          "type": "file_contains",
+          "description": "Custom final URL suffix is present",
+          "check": "The Final URL suffix column contains the user-specified custom suffix"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Jag har en RSA-fil med svenska nycklar (Kampanj, Annonsgrupp, Rubrik, Beskrivning, Sökord, etc.) i mappen 'test-swedish-keys'. Skapa en Google Ads Editor CSV. Mål-CPA 100 kr, ingen budget, standardspårning (alternativ 2).",
+      "expected_output": "The script should correctly parse Swedish keys (Kampanj, Annonsgrupp, Sökord, Platsinriktning, Slutlig webbadress, Visningsadress, Rubrik, Beskrivning) as backward compatibility. CSV should have correct campaign name, ad group name, keywords, headlines, descriptions, and all standard fields.",
+      "files": [],
+      "assertions": [
+        {
+          "type": "file_contains",
+          "description": "Swedish key 'Kampanj' parsed correctly",
+          "check": "The CSV contains the campaign name from the 'Kampanj:' line in the RSA file"
+        },
+        {
+          "type": "file_contains",
+          "description": "Swedish key 'Annonsgrupp' parsed correctly",
+          "check": "The CSV contains the ad group name from the 'Annonsgrupp:' line"
+        },
+        {
+          "type": "file_contains",
+          "description": "Swedish headlines (Rubrik) parsed correctly",
+          "check": "RSA ad rows contain headline text from 'Rubrik N:' lines"
+        },
+        {
+          "type": "file_contains",
+          "description": "Swedish descriptions (Beskrivning) parsed correctly",
+          "check": "RSA ad rows contain description text from 'Beskrivning N:' lines"
+        },
+        {
+          "type": "file_contains",
+          "description": "Swedish position 'valfri position' maps to empty/unpinned",
+          "check": "Headlines with 'valfri position' have empty position value in the CSV (unpinned)"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "I have an RSA file with multiple ads separated by --- in the same file (3 ads for one ad group), plus keywords with mixed match types: some in quotes (phrase), some in brackets (exact), and some without (broad). The files are in the 'test-multi-ad' folder. Create a Google Ads Editor CSV. Target CPA 100, no budget.",
+      "expected_output": "CSV should contain 3 RSA ad rows for the same ad group (named _RSA_1, _RSA_2, _RSA_3), each with their own headlines/descriptions. Keywords should be correctly classified: quoted as Phrase, bracketed as Exact, bare as Broad. Each ad should inherit campaign/ad group/keywords from the header section.",
+      "files": [],
+      "assertions": [
+        {
+          "type": "file_contains",
+          "description": "Three RSA ads generated for the ad group",
+          "check": "The CSV contains 3 RSA ad rows with Ad Names ending in _RSA_1, _RSA_2, and _RSA_3"
+        },
+        {
+          "type": "file_contains",
+          "description": "Phrase match keywords detected correctly",
+          "check": "Keywords wrapped in double quotes in the RSA file have Criterion Type 'Phrase' in the CSV"
+        },
+        {
+          "type": "file_contains",
+          "description": "Exact match keywords detected correctly",
+          "check": "Keywords wrapped in square brackets in the RSA file have Criterion Type 'Exact' in the CSV"
+        },
+        {
+          "type": "file_contains",
+          "description": "Broad match keywords detected correctly",
+          "check": "Keywords without any wrapping in the RSA file have Criterion Type 'Broad' in the CSV"
+        },
+        {
+          "type": "file_contains",
+          "description": "Second and third ads can have different URLs/paths",
+          "check": "If the second or third ad section specifies a different Final URL or display paths, those are reflected in the CSV"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "RSA-filerna i mappen 'test-multi-location' har platsinriktning 'Stockholm, Göteborg, Malmö'. Skapa CSV för Google Ads Editor. Mål-CPA 200 kr.",
+      "expected_output": "CSV should have three separate location targeting rows – one for Stockholm (1012728), one for Göteborg (1011919), and one for Malmö (1012046). Each row should only have Campaign and Location ID columns filled in.",
+      "files": [],
+      "assertions": [
+        {
+          "type": "file_contains",
+          "description": "Multi-location split into separate rows",
+          "check": "The CSV contains 3 separate location targeting rows (one per city) rather than a single row with all locations"
+        },
+        {
+          "type": "file_contains",
+          "description": "Stockholm location ID correct",
+          "check": "One location row has Location ID '1012728' (Stockholm)"
+        },
+        {
+          "type": "file_contains",
+          "description": "Göteborg location ID correct",
+          "check": "One location row has Location ID '1011919' (Göteborg)"
+        },
+        {
+          "type": "file_contains",
+          "description": "Malmö location ID correct",
+          "check": "One location row has Location ID '1012046' (Malmö)"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "Skapa en Google Ads Editor CSV från filerna i 'test-char-limits'. OBS: Några rubriker är för långa (över 30 tecken) och en beskrivning är över 90 tecken. Mål-CPA 100 kr.",
+      "expected_output": "The CSV should be generated despite character limit violations, but the skill should warn about each violation: which ad group, which headline/description, the actual length, and the max allowed. The CSV should still contain the too-long text (let the user fix it).",
+      "files": [],
+      "assertions": [
+        {
+          "type": "file_contains",
+          "description": "CSV is generated despite violations",
+          "check": "A CSV file is created even when character limits are exceeded"
+        },
+        {
+          "type": "file_contains",
+          "description": "Warnings list all headline violations",
+          "check": "The output warns about each headline that exceeds 30 characters, listing the ad group, headline number, and actual length"
+        },
+        {
+          "type": "file_contains",
+          "description": "Warnings list description violations",
+          "check": "The output warns about each description that exceeds 90 characters"
+        },
+        {
+          "type": "file_contains",
+          "description": "Warnings list display path violations",
+          "check": "The output warns about display paths that exceed 15 characters"
         }
       ]
     }

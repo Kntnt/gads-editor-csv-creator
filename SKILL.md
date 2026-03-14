@@ -303,7 +303,9 @@ Respond in the same language the user uses. The CSV file always uses English col
 
 ## Typography
 
-Use proper Unicode characters in all output:
+Use proper Unicode characters in **chat messages** (summaries, confirmations, warnings):
 - En dash: – (U+2013)
 - Quotation marks: "..." (U+201C/U+201D)
 - Arrow: → (U+2192)
+
+**Exception:** The CSV file itself must use straight ASCII quotes (`"`, U+0022) – this is what Google Ads Editor expects for phrase-match keywords and negative keywords.
